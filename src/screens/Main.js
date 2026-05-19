@@ -50,7 +50,7 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 
 		this.state = {
 			sourceUrl			: baseUrl + authPage,
-			currentUrl: baseUrl + authPage,
+			currentUrl			: baseUrl + authPage,
 			canGoBack			: false,
 			isConnected			: true,
 			isLoading			: false,
@@ -72,8 +72,6 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 	componentDidUpdate(prevProps)
 	{
 		console.log("*Main.componentDidUpdate()");
-
-
 		//console.log(" -prevProps.route.params:"+JSON.stringify(prevProps.route.params));
 		//console.log(" -this.props.route.params:"+JSON.stringify(this.props.route.params));
 		if(prevProps.route.params !== this.props.route.params)
@@ -98,8 +96,25 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 		if( strLink.indexOf("hmprm://")  > -1)
 		{
 			var strUrl = Config.BASE_URL + strLink.substr(strLink.indexOf('://') + 2);
-			console.log("strUrl:"+ strUrl);
+			console.log(" -Url:"+ strUrl +", currentUrl:"+ this.state.currentUrl);
+
+			/*
+			// 현재 동일한 URL인경우 릴로드 
+			if(this.state.currentUrl === strUrl)
+			{
+				console.log(" -릴로드");
+				this.postMessage(consts.MSG_GET_PUSH_DATA, objData);
+				//if (this.refWebView != null) this.refWebView.reload();	
+				
+			}
+			else
+			{
+				this.setState({ sourceUrl: strUrl, currentUrl: strUrl });
+			}*/
+			// 웹뷰로 전송하여 웹뷰에서 데이터롤 다시 가져오
+			this.postMessage(consts.MSG_GET_PUSH_DATA, JSON.stringify(objData));
 			this.setState({ sourceUrl: strUrl, currentUrl: strUrl });
+			
 		}
 		else
 		{
@@ -203,7 +218,6 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 				{
 					this.props.navigation.navigate("QrScan", objData);
 				}
-
 				//this.props.navigation.navigate("QrScan", objData);
 			}
 			else if(consts.MSG_SET_STATUS_BAR == strMsgId)
@@ -215,8 +229,7 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 			// {
 			// 	console.log(" -로딩설정, objData.msgData:"+ objData.msgData);
 			// 	this.setState({ isLoading: objData.msgData });
-			// }			
-			
+			// }
 			else if(consts.MSG_SET_APP_DATA == strMsgId)
 			{
 				console.log(" -App 정보 설정");
@@ -231,7 +244,6 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 				console.log("=================================");
 				console.log("*디바이스 정보 리턴");
 				console.log("=================================");	
-				
 				this.getDeviceInfo();
 			}
 			else if(consts.MSG_REQUEST_LOCATION == strMsgId)

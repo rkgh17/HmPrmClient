@@ -32,9 +32,10 @@ export default
 	MSG_TOAST						: "toast",		// 토스트메시지
 
 	MSG_GET_SCAN_DATA				: "getScan",	// 스캔데이터 리턴
-
+	MSG_GET_PUSH_DATA				: "getPush",	// 푸시데이터 리턴
 	MSG_GET_APP_DATA				: "getApp",		// 앱 데이터 리턴
 	MSG_SET_APP_DATA				: "setApp",		// 앱 데이터 설정
+	
 	MSG_SET_STATUS_BAR				: "setStBar",	// 상태바 설정
 	MSG_GET_DEVICE_INFO				: "getDev",		// 디바이스 정보 리턴 요청 
 	MSG_REQUEST_LOCATION 			: "reqLoc",		// 위치정보 요청
