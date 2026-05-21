@@ -30,6 +30,7 @@ export default
 	MSG_CLOSE_NEW_SCREEN			: "closeNewScr",// 새로운화면 닫기
 	MSG_OPEN_URL					: "opnUrl",		// 새로운 URL 오픈
 	MSG_TOAST						: "toast",		// 토스트메시지
+	MSG_DOWNLOAD_URL				: "dnUrl",		// 다운로드URL 
 
 	MSG_GET_SCAN_DATA				: "getScan",	// 스캔데이터 리턴
 	MSG_GET_PUSH_DATA				: "getPush",	// 푸시데이터 리턴

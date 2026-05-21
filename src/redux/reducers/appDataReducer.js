@@ -41,7 +41,6 @@
 		case SET_APP_DATA			: return {...state, ...action.payload };
 		case SET_CHECK_PERMISSION	: return {...state, checkPermission : action.payload }	
 		case SET_STATUS_BAR			: 
-			console.log(" 상타바아아아아 @@@@@@");
 		return {...state, statusBarColor : action.payload.statusBarColor, statusBarStyle : action.payload.statusBarStyle	};
 		case SET_STATUS_BAR_COLOR	: return {...state, statusBarColor : action.payload }
 		default:

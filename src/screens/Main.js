@@ -12,15 +12,16 @@ import { colors, consts} from "~/common/libs/base";
 import mosaic from '~/common/libs/mosaic/mosaic';
 import AppStatusBar from "~/components/AppStatusBar";
 import DeviceInfo from "react-native-device-info";
-//import CookieManager from '@preeternal/react-native-cookie-manager';
-//import { CookieManager } from 'react-native-nitro-cookies';
+import ReactNativeBlobUtil from 'react-native-blob-util';
+import Toast from 'react-native-simple-toast';
 import NitroCookies from 'react-native-nitro-cookies';
 import SendIntentAndroid from "react-native-send-intent";
 import {WebView} from "react-native-webview";
 import { showDialog, hideDialog } from "~/redux/actions/dialogAction";
 import { setStatusBar } from "~/redux/actions/appDataAction";
 import { pushMsgInit } from '~/redux/actions/pushDataAction'
- import Config from 'react-native-config';
+import Config from 'react-native-config';
+
  /**
   * 메인화면 클래스
   * @author	yomile
@@ -55,6 +56,7 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 			isConnected			: true,
 			isLoading			: false,
 		};
+
 	}
  
 
@@ -275,6 +277,46 @@ import { pushMsgInit } from '~/redux/actions/pushDataAction'
 						maximumAge: 10000
 					}
 				);
+			}
+			else if(consts.MSG_DOWNLOAD_URL == strMsgId)
+			{
+				console.log("=================================");
+				console.log("*Url을 통한 다운로드");
+				console.log("=================================");	
+
+				let objMsgData = objData.msgData;
+				let strUrl = objMsgData.url;
+				let strFileSaveName = objMsgData.fileName;
+				console.log(" -strUrl:" + strUrl +", 파일명 :"+ strFileSaveName);
+
+				// 파일명이 긴경우 안드로이드는 예외를 발생함.
+				if(strFileSaveName.length > 50)
+				{
+					const strExt = strFileSaveName.split('.').pop();
+					strFileSaveName = strFileSaveName.substring(0, 40) + "." + strExt;
+				}
+
+				const strFileSavePath = ReactNativeBlobUtil.fs.dirs.DownloadDir + "/" + strFileSaveName;
+				console.log(" -strFileSavePath:" + strFileSavePath +", strFileSaveName:"+ strFileSaveName);
+				try
+				{
+					ReactNativeBlobUtil.config({
+						strFileSavePath,
+						addAndroidDownloads: {
+							useDownloadManager: true,
+							notification: true,
+							title: strFileSaveName,
+							path : strFileSavePath,
+							description: '파일 다운로드 중'
+						}
+					})
+					.fetch("GET", strUrl);
+					Toast.showWithGravity("파일이 디바이스에 저장되었습니다.", Toast.LONG, Toast.BOTTOM);
+				}
+				catch(e)
+				{
+					Toast.showWithGravity("파일을 디바이스에 저장하는데 오류가 발생하였습니다.", Toast.LONG, Toast.BOTTOM);
+				}
 			}
 		}
 	}
