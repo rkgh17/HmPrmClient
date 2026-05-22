@@ -310,12 +310,8 @@ import Config from 'react-native-config';
 			else if(consts.MSG_GET_PERMISSION == strMsgId)
 			{
 				let objMsgData = objData.msgData;
-
 				Permissions.check(objMsgData.permission).then(status => {
 					objMsgData.status = status;
-					console.log("@@@@@@@@@@@@@@@");
-					console.log(objMsgData);
-					console.log("@@@@@@@@@@@@@@@");
 					this.postMessage(consts.MSG_GET_PERMISSION, JSON.stringify(objMsgData));	
 				});
 			}
@@ -328,40 +324,112 @@ import Config from 'react-native-config';
 
 	async downloadFromUrl(strUrl, strFileSaveName)
 	{
-		let objResponse = null;
 		try
 		{
-			let strFileSavePath = ReactNativeBlobUtil.fs.dirs.DownloadDir + "/" + strFileSaveName;
-			console.log(" -strFileSavePath:" + strFileSavePath +", strFileSaveName:"+ strFileSaveName);
-			objResponse = await ReactNativeBlobUtil.config({
-				strFileSavePath,
-				addAndroidDownloads: {
-					useDownloadManager: true,
-					notification: true,
-					title: strFileSaveName,
-					path : strFileSavePath,
-					description: '파일 다운로드 중'
+			let strMimeType = this.getMimeType(strFileSaveName);
+			console.log("시작 - 파일명: " + strFileSaveName + ", MimeType: " + strMimeType);
+
+			let strActualPath = "";
+			if (Platform.OS === "android")
+			{
+
+				let strFileSavePath = ReactNativeBlobUtil.fs.dirs.DownloadDir +"/"+ strFileSaveName;
+				let objResponse = await ReactNativeBlobUtil.config({
+					fileCache: true,
+					addAndroidDownloads: {
+						useDownloadManager: true,
+						notification: true,
+						title: strFileSaveName,
+						path: strFileSavePath, // ★ 여기에 경로를 명시해 주어야 파일 유실이 없습니다!
+						description: '파일 다운로드 중',
+						mediaScannable: true,
+						mime: strMimeType
+					}
+				}).fetch("GET", strUrl);
+				strActualPath = objResponse.path(); 
+			}
+			else
+			{
+				let strFileSavePath = ReactNativeBlobUtil.fs.dirs.DocumentDir +"/"+ strFileSaveName;
+				let objResponse = await ReactNativeBlobUtil.config({
+					path: strFileSavePath,
+					fileCache: true
+				}).fetch("GET", strUrl);
+				strActualPath = objResponse.path();
+			}
+			console.log(" -실제저장된경로:", strActualPath);
+			let boolExist = await ReactNativeBlobUtil.fs.exists(strActualPath);
+			if (boolExist == false)
+			{
+				Alert.alert("다운로드 실패", "파일을 찾을 수 없습니다.");
+				return;
+			}
+			if (Platform.OS === 'android')
+			{
+				try
+				{
+					await ReactNativeBlobUtil.android.actionViewIntent(strActualPath, strMimeType);
 				}
-			}).fetch("GET", strUrl);
-		}
-		catch(e)
-		{
-			console.log(e);
-			Toast.showWithGravity("파일을 디바이스에 저장하는데 오류가 발생하였습니다.", Toast.LONG, Toast.BOTTOM);
-		}
-		if(objResponse != null)
-		{
-			try
-			{
-				await FileViewer.open(objResponse.path(), {showOpenWithDialog: true});
+				catch (e)
+				{
+					this.showNoAppAlert();
+				}
 			}
-			catch(e)
+			else
 			{
-				console.log(e);
-				Alert.alert("파일 열기 실패", "이 파일을 열 수 있는 앱이 설치되어 있지 않습니다.\n파일을 열수있는 앱을 설치해주세요.");
+				try
+				{
+					await FileViewer.open(strActualPath, { showOpenWithDialog: true });
+				}
+				catch (e)
+				{
+					this.showNoAppAlert();
+				}
 			}
+		}
+		catch (e)
+		{
+			console.log("다운로드 에러:", e);
+			Toast.showWithGravity("파일 처리 중 오류가 발생하였습니다.", Toast.LONG, Toast.BOTTOM);
 		}
 	}
+
+	showNoAppAlert()
+	{
+		Alert.alert("파일 열기 실패", "파일은 다운로드 되었지만 열 수 있는 앱이 설치되어 있지 않거나 열 수 없는 파일 형식입니다.");
+	}
+
+	
+
+	getMimeType(strFileName)
+{
+	let strExt =
+		strFileName.split(".").pop().toLowerCase();
+
+	switch(strExt)
+	{
+		case "xlsx":
+			return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+		case "xls":
+			return "application/vnd.ms-excel";
+
+		case "pdf":
+			return "application/pdf";
+
+		case "docx":
+			return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+		case "doc":
+			return "application/msword";
+
+		case "hwp":
+			return "application/haansofthwp";
+
+		default:
+			return "application/octet-stream";
+	}
+}	
 
 	async getDeviceInfo()
 	{
