@@ -24,6 +24,7 @@ export default
 	//=======================================================================================
 	// Native 메시지 구분
 	//---------------------------------------------------------------------------------------
+	MSG_GET_PERMISSION				: "getPerm",	// 퍼미션가져오기 
 	MSG_REQUEST_PERMISSION			: "reqPerm",	// 퍼미션요청
 	MSG_GO_MAIN						: "goMain",		// 메인화면으로 이동
 	MSG_NEW_SCREEN					: "newScr",		// 새로운화면 오픈
@@ -31,7 +32,8 @@ export default
 	MSG_OPEN_URL					: "opnUrl",		// 새로운 URL 오픈
 	MSG_TOAST						: "toast",		// 토스트메시지
 	MSG_DOWNLOAD_URL				: "dnUrl",		// 다운로드URL 
-
+	MSG_OPEN_SETTINGS				: "opnSets",	// 세팅화면열기 
+	
 	MSG_GET_SCAN_DATA				: "getScan",	// 스캔데이터 리턴
 	MSG_GET_PUSH_DATA				: "getPush",	// 푸시데이터 리턴
 	MSG_GET_APP_DATA				: "getApp",		// 앱 데이터 리턴
@@ -44,7 +46,7 @@ export default
 	MSG_SET_LOADING					: "setLoading",	// 로딩 설정
 	MSG_SET_LOADING_ENABLED			: "setLoadEnable",	// 로딩 설정
 
-	MSG_GET_MULTI_SCAN_DATA		: "getMultiScan",	// 멀티 스캔데이터 리턴
+	MSG_GET_MULTI_SCAN_DATA			: "getMultiScan",	// 멀티 스캔데이터 리턴
 
 	//=======================================================================================
 

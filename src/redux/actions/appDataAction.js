@@ -44,9 +44,8 @@ export const loadAppDataFromStorage = ()=> async(dispatch, getState) => {
 export const setCheckPermission = (boolCheckPermission) => async(dispatch, getState) => {
 	console.log("*appDtaAction.setCheckPermission");
 	let boolPrevCheckPermssion = getState().appData.checkPermission;
-
-	console.log(" -boolCheckPermission:"+ boolCheckPermission);
-	console.log(" -boolPrevCheckPermssion:"+ boolPrevCheckPermssion);
+	console.log(" -CheckPermission:"+ boolCheckPermission);
+	console.log(" -PrevCheckPermssion:"+ boolPrevCheckPermssion);
 
 	if(boolPrevCheckPermssion != boolCheckPermission)
 	{

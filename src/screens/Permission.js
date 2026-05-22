@@ -16,7 +16,7 @@ import mosaic from "~/common/libs/mosaic/mosaic";
 import { setCheckPermission } from "~/redux/actions/appDataAction";
 
  
-  /**
+ /**
    *  초기 피미션 체크 화면 클래스
    *  
    * @author	yomile
@@ -77,9 +77,7 @@ class Permission extends PureComponent
 		console.log("*Permission.requestBasePermission()");
 		const { androidPermissions, androidExtendPermissions, iosPermissions, iosExtendPermissions } = this.props.appData;
 		var arrPermission = (Platform.OS === "ios") ? iosPermissions : androidPermissions;
-
 		console.log("arrPermission:", arrPermission);
-
 		let clsPermissionMgr = new mosaic.permission.PermissionMgr(arrPermission);			
 		let boolGranted = await clsPermissionMgr.checkPermission();
 		console.log(" -기본퍼미션Grant여부:", boolGranted);
@@ -146,7 +144,6 @@ class Permission extends PureComponent
 		console.log("*Permission.initializeApp()");
 		console.log("-------------------------------------");
 	}
-
 
 	/**
 	 * 에러에 대한 다이얼로그를 보여준다.

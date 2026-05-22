@@ -5,7 +5,7 @@
  * @brief	메인 화면 파일
  */
 import React, { PureComponent, Fragment } from "react";
-import { View, StyleSheet, BackHandler, ActivityIndicator, TouchableOpacity, AppState } from "react-native";
+import { View, StyleSheet, BackHandler, ActivityIndicator, TouchableOpacity, AppState, Alert } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from "react-redux";
 import { colors, consts} from "~/common/libs/base";
@@ -13,6 +13,8 @@ import mosaic from '~/common/libs/mosaic/mosaic';
 import AppStatusBar from "~/components/AppStatusBar";
 import DeviceInfo from "react-native-device-info";
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import Permissions from 'react-native-permissions';
+import FileViewer from 'react-native-file-viewer';
 import Toast from 'react-native-simple-toast';
 import NitroCookies from 'react-native-nitro-cookies';
 import SendIntentAndroid from "react-native-send-intent";
@@ -21,6 +23,8 @@ import { showDialog, hideDialog } from "~/redux/actions/dialogAction";
 import { setStatusBar } from "~/redux/actions/appDataAction";
 import { pushMsgInit } from '~/redux/actions/pushDataAction'
 import Config from 'react-native-config';
+
+
 
  /**
   * 메인화면 클래스
@@ -56,7 +60,6 @@ import Config from 'react-native-config';
 			isConnected			: true,
 			isLoading			: false,
 		};
-
 	}
  
 
@@ -232,6 +235,13 @@ import Config from 'react-native-config';
 			// 	console.log(" -로딩설정, objData.msgData:"+ objData.msgData);
 			// 	this.setState({ isLoading: objData.msgData });
 			// }
+			else if(consts.MSG_REQUEST_GET_APP_DATA == strMsgId)
+			{
+				console.log("=================================");
+				console.log("*App 정보 리턴");
+				console.log("=================================");		
+				this.postMessage(consts.MSG_GET_APP_DATA, JSON.stringify(this.props.appData));
+			}			
 			else if(consts.MSG_SET_APP_DATA == strMsgId)
 			{
 				console.log(" -App 정보 설정");
@@ -295,28 +305,60 @@ import Config from 'react-native-config';
 					const strExt = strFileSaveName.split('.').pop();
 					strFileSaveName = strFileSaveName.substring(0, 40) + "." + strExt;
 				}
+				this.downloadFromUrl(strUrl, strFileSaveName);
+			}
+			else if(consts.MSG_GET_PERMISSION == strMsgId)
+			{
+				let objMsgData = objData.msgData;
 
-				const strFileSavePath = ReactNativeBlobUtil.fs.dirs.DownloadDir + "/" + strFileSaveName;
-				console.log(" -strFileSavePath:" + strFileSavePath +", strFileSaveName:"+ strFileSaveName);
-				try
-				{
-					ReactNativeBlobUtil.config({
-						strFileSavePath,
-						addAndroidDownloads: {
-							useDownloadManager: true,
-							notification: true,
-							title: strFileSaveName,
-							path : strFileSavePath,
-							description: '파일 다운로드 중'
-						}
-					})
-					.fetch("GET", strUrl);
-					Toast.showWithGravity("파일이 디바이스에 저장되었습니다.", Toast.LONG, Toast.BOTTOM);
+				Permissions.check(objMsgData.permission).then(status => {
+					objMsgData.status = status;
+					console.log("@@@@@@@@@@@@@@@");
+					console.log(objMsgData);
+					console.log("@@@@@@@@@@@@@@@");
+					this.postMessage(consts.MSG_GET_PERMISSION, JSON.stringify(objMsgData));	
+				});
+			}
+			else if(consts.MSG_OPEN_SETTINGS == strMsgId)
+			{
+				Permissions.openSettings();
+			}
+		}
+	}
+
+	async downloadFromUrl(strUrl, strFileSaveName)
+	{
+		let objResponse = null;
+		try
+		{
+			let strFileSavePath = ReactNativeBlobUtil.fs.dirs.DownloadDir + "/" + strFileSaveName;
+			console.log(" -strFileSavePath:" + strFileSavePath +", strFileSaveName:"+ strFileSaveName);
+			objResponse = await ReactNativeBlobUtil.config({
+				strFileSavePath,
+				addAndroidDownloads: {
+					useDownloadManager: true,
+					notification: true,
+					title: strFileSaveName,
+					path : strFileSavePath,
+					description: '파일 다운로드 중'
 				}
-				catch(e)
-				{
-					Toast.showWithGravity("파일을 디바이스에 저장하는데 오류가 발생하였습니다.", Toast.LONG, Toast.BOTTOM);
-				}
+			}).fetch("GET", strUrl);
+		}
+		catch(e)
+		{
+			console.log(e);
+			Toast.showWithGravity("파일을 디바이스에 저장하는데 오류가 발생하였습니다.", Toast.LONG, Toast.BOTTOM);
+		}
+		if(objResponse != null)
+		{
+			try
+			{
+				await FileViewer.open(objResponse.path(), {showOpenWithDialog: true});
+			}
+			catch(e)
+			{
+				console.log(e);
+				Alert.alert("파일 열기 실패", "이 파일을 열 수 있는 앱이 설치되어 있지 않습니다.\n파일을 열수있는 앱을 설치해주세요.");
 			}
 		}
 	}
@@ -324,7 +366,7 @@ import Config from 'react-native-config';
 	async getDeviceInfo()
 	{
 		let objAppData		= this.props.appData;
-		console.log("@@@@@@@@@@@@@@@@@@objAppData:"+ JSON.stringify(objAppData));
+		console.log(" AppData:"+ JSON.stringify(objAppData));
 		if(objAppData != null)
 		{
 			let objData = {
@@ -391,7 +433,6 @@ import Config from 'react-native-config';
 		}
 		this.showLoading();
 	}
-
 
 	/**
 	 * 로딩 완료 이벤트
