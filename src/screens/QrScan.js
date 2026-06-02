@@ -71,7 +71,8 @@ const QrScan = (props) => {
 	{
 		let arrData = {...props.route.params};
 		arrData.data = mHmBarcode.current.values();
-		props.navigation.popTo("Main", arrData);
+		const strSourceScreen = props.route.params.sourceScreenl || "Main";
+		props.navigation.popTo(strSourceScreen, arrData);
 
 		setScan(true);
 	}

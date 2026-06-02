@@ -78,6 +78,18 @@ class NewScreen extends PureComponent
 	{
 		if (prevProps.route?.params !== this.props.route?.params)
 		{
+			const params = this.props.route.params;
+			const strMsgId = params?.msgId;
+
+			if(strMsgId === consts.MSG_GET_SCAN_DATA || strMsgId === consts.MSG_GET_MULTI_SCAN_DATA)
+			{
+				if(this.refWebView != null)
+				{
+					this.refWebView.postMessage(JSON.stringify(params));
+				}
+				return;
+			}
+
 			const strSourceUrl = this.getSourceUrlFromParams(this.props.route.params);
 			if (strSourceUrl != null && strSourceUrl !== this.state.sourceUrl)
 			{
@@ -166,6 +178,15 @@ class NewScreen extends PureComponent
 				console.log("=================================");		
 				this.props.navigation.goBack();
 				return;
+			}
+
+			if(consts.MSG_GET_SCAN_DATA == strMsgId || consts.MSG_GET_MULTI_SCAN_DATA == strMsgId) 
+			{
+				console.log(" -스캔데이터 리턴");
+				if (this.props.route.name !== "QrScan")
+				{
+					this.props.navigation.navigate("QrScan", {...objData, sourceScreen: "NewScreen"});
+				}
 			}
 		}
 	}	
