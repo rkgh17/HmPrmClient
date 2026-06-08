@@ -16,7 +16,7 @@
 		"android:assemble:prd": "npm run android:bundle:create && npm run android:gradle:clean && cd android && ./gradlew assemblePrd",
 		"android:bundle:stg": "npm run android:bundle:create && npm run android:gradle:clean && cd android && ./gradlew bundleStg",
 		"android:bundle:prd": "npm run android:bundle:create && npm run android:gradle:clean && cd android && ./gradlew bundlePrd",
-		"android:bundle:create:win": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && rmdir /s /q android\\app\\src\\main\\res\\drawable-* && rmdir /s /q android\\app\\src\\main\\res\\raw",
+		"android:bundle:create:win": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && for /d %d in (android\\app\\src\\main\\res\\drawable-*) do rmdir /s /q \"%d\" && if exist android\\app\\src\\main\\res\\raw rmdir /s /q android\\app\\src\\main\\res\\raw",
 		"android:gradle:clean:win": "cd android && gradlew.bat clean && cd ..",
 		"android:assemble:debug:win": "npm run android:bundle:create:win && npm run android:gradle:clean:win && cd android && gradlew.bat assembleDebug",
 		"android:assemble:dev:win": "npm run android:bundle:create:win && npm run android:gradle:clean:win && cd android && gradlew.bat assembleDev",

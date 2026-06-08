@@ -65,14 +65,17 @@ class FcmService
 		//console.log("====================================");
 		messaging().hasPermission().then(enabled => {
 			console.log(" -Fcm HasPermission Enabled:"+ enabled);
-			if (enabled)
-			{
-				this.getToken(onRegister);
-			}
-			else
-			{
-				this.requestPermission(onRegister)
-			}
+
+			// if (enabled)
+			// {
+			// 	this.getToken(onRegister);
+			// }
+			// else
+			// {
+			// 	this.requestPermission(onRegister)
+			// }
+
+			this.getToken(onRegister);
 		}).catch(error => {
 			console.log("[FcmService] Permission rejected ", error);
 		})

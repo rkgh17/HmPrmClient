@@ -40,14 +40,19 @@ class NotificationService
 		this.mClsUnsubscribeForegroundEvent = null;
 
 		console.log("*NotificationService.생성자");
-		// 권한 요청 (iOS / Android 13+)
-		notifee.requestPermission({alert: true, badge: true, sound: true });
+		// // 권한 요청 (iOS / Android 13+)
+		// notifee.requestPermission({alert: true, badge: true, sound: true });
 
 		if (Platform.OS === "android")
 		{
 			this.createDefaultChannels();
 		}
 		notifee.setBadgeCount(0);	
+	}
+
+	requestPermission = async () => {
+		console.log("*NotificationService.requestPermission()");
+		return await notifee.requestPermission({ alert: true, badge: true, sound: true });
 	}
 
 	/**
