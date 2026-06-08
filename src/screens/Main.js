@@ -20,7 +20,7 @@ import NitroCookies from 'react-native-nitro-cookies';
 import SendIntentAndroid from "react-native-send-intent";
 import {WebView} from "react-native-webview";
 import { showDialog, hideDialog } from "~/redux/actions/dialogAction";
-import { setStatusBar } from "~/redux/actions/appDataAction";
+import { setStatusBar, setAppData } from "~/redux/actions/appDataAction";
 import { pushMsgInit } from '~/redux/actions/pushDataAction'
 import Config from 'react-native-config';
 
